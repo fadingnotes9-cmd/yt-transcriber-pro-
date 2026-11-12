@@ -1,0 +1,10 @@
+LICENSE
+README.md
+main.py
+pyproject.toml
+yt_transcriber_pro.egg-info/PKG-INFO
+yt_transcriber_pro.egg-info/SOURCES.txt
+yt_transcriber_pro.egg-info/dependency_links.txt
+yt_transcriber_pro.egg-info/entry_points.txt
+yt_transcriber_pro.egg-info/requires.txt
+yt_transcriber_pro.egg-info/top_level.txt

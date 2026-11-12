@@ -1,0 +1,89 @@
+Metadata-Version: 2.4
+Name: yt-transcriber-pro
+Version: 1.0.0
+Summary: Professional AI Transcription & SEO Tool for Content Creators
+Author-email: bagus <fadingnotes9@gmail.com>
+License: MIT
+Project-URL: Homepage, https://github.com/fadingnotes9-cmd/yt-transcriber-pro
+Project-URL: Repository, https://github.com/fadingnotes9-cmd/yt-transcriber-pro
+Keywords: youtube,transcription,ai,seo,whisper,cli
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Topic :: Multimedia :: Sound/Audio
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: click>=8.0.0
+Requires-Dist: rich>=10.0.0
+Requires-Dist: yt-dlp>=2023.1.1
+Dynamic: license-file
+
+# 🎬 YT-Transcriber Pro
+
+[![Python Version](https://img.shields.io/badge/python-3.8%2B-blue)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![CLI Tool](https://img.shields.io/badge/CLI-Click-green)](https://click.palletsprojects.com/)
+
+**YT-Transcriber Pro** adalah aplikasi Command Line Interface (CLI) profesional untuk konten kreator. Alat ini memungkinkan Anda mendownload subtitle YouTube, membuat transkrip otomatis menggunakan AI (Whisper.cpp), dan menganalisis SEO video kompetitor.
+
+## ✨ Fitur Utama
+
+- 📥 **Download Subtitle Cepat**: Ambil subtitle langsung dari YouTube (Support ID/EN).
+- 🧠 **AI Transcription**: Konversi audio ke teks menggunakan Whisper.cpp (Auto-detect bahasa).
+- 🔍 **SEO Analyzer**: Analisis Tags, Hashtags, dan beri skor SEO pada video YouTube.
+- 📂 **Manajemen File**: Output otomatis tersimpan rapi di folder `AI_Captions`.
+- 🎨 **UI Modern**: Tampilan terminal yang cantik dan interaktif menggunakan Rich.
+
+## 🚀 Instalasi
+
+Pastikan Anda sudah menginstall [Termux](https://termux.dev/) dan menjalankan setup awal:
+
+```bash
+# 1. Clone repository ini
+git clone https://github.com/USERNAME_KAMU/yt-transcriber-pro.git
+cd yt-transcriber-pro
+
+# 2. Install dependencies & build whisper.cpp (Jika belum)
+pkg install python nodejs ffmpeg cmake clang make wget -y
+pip install .
+```
+
+## 🛠️ Cara Penggunaan
+
+### 1. Transkrip Otomatis (AI)
+Mendownload audio dan mengubahnya menjadi teks (Mendeteksi bahasa asli secara otomatis).
+```bash
+yt-transcriber transcribe -u "https://youtube.com/watch?v=VIDEO_ID"
+```
+
+### 2. Download Subtitle Langsung
+Jika video sudah memiliki subtitle di YouTube.
+```bash
+yt-transcriber download -u "https://youtube.com/watch?v=VIDEO_ID" -l id
+```
+
+### 3. Analisis SEO
+Menganalisis metadata video untuk riset kompetitor.
+```bash
+yt-transcriber seo -u "https://youtube.com/watch?v=VIDEO_ID"
+```
+
+### 4. Lihat File Hasil
+```bash
+yt-transcriber list
+```
+
+## ⚙️ Opsi Lanjutan
+
+- `--verbose` atau `-v`: Menampilkan log debugging untuk troubleshooting.
+- `--version`: Melihat versi aplikasi.
+
+## 📄 Lisensi
+
+Proyek ini dilisensikan di bawah [MIT License](LICENSE).
+
+## 🤝 Kontribusi
+
+Kontribusi, isu, dan permintaan fitur sangat diterima! Silakan buat Pull Request.
