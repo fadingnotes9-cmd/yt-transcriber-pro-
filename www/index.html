@@ -16,7 +16,7 @@
         .btn-download { background: #10b981; color: white; }
         .btn-seo { background: #f59e0b; color: white; }
         .btn-list { background: #8b5cf6; color: white; }
-        #status { margin-top: 20px; padding: 15px; background: #1e293b; border-radius: 8px; text-align: center; font-size: 14px; color: #94a3b8; border: 1px solid #334155; }
+        #status { margin-top: 20px; padding: 15px; background: #1e293b; border-radius: 8px; text-align: center; font-size: 14px; color: #94a3b8; border: 1px solid #334155; white-space: pre-wrap; }
     </style>
 </head>
 <body>
@@ -35,26 +35,7 @@
 
     <div id="status">Siap memproses. Masukkan link YouTube.</div>
 
-    <script>
-        function runCommand(action) {
-            const url = document.getElementById('urlInput').value.trim();
-            const status = document.getElementById('status');
-            
-            if (action !== 'list' && !url) {
-                status.innerText = "⚠️ Masukkan link YouTube terlebih dahulu!";
-                status.style.color = "#f87171";
-                return;
-            }
-            
-            status.innerText = `⏳ Memproses: ${action}... (Cek Termux)`;
-            status.style.color = "#38bdf8";
-            
-            // Nanti di sini kita akan tambahkan logic Capacitor/Termux API
-            setTimeout(() => {
-                status.innerText = "✅ Perintah dikirim ke Termux! Silakan cek notifikasi.";
-                status.style.color = "#4ade80";
-            }, 800);
-        }
-    </script>
+    <!-- Memuat logic JavaScript -->
+    <script src="app.js"></script>
 </body>
 </html>
