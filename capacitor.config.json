@@ -1,0 +1,6 @@
+{
+  "appId": "com.fadingnotes9.yttranscriber",
+  "appName": "YT Transcriber Pro",
+  "webDir": "www",
+  "server": { "androidScheme": "https" }
+}

@@ -1,0 +1,24 @@
+{
+  "name": "yt-transcriber-pro",
+  "version": "1.0.0",
+  "description": "[![Python Version](https://img.shields.io/badge/python-3.8%2B-blue)](https://www.python.org/downloads/) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) [![CLI Tool](https://img.shields.io/badge/CLI-Click-green)](https://click.palletsprojects.com/)",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fadingnotes9-cmd/yt-transcriber-pro-.git"
+  },
+  "keywords": [],
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/fadingnotes9-cmd/yt-transcriber-pro-/issues"
+  },
+  "homepage": "https://github.com/fadingnotes9-cmd/yt-transcriber-pro-#readme",
+  "dependencies": {
+    "@capacitor/android": "^8.6.0",
+    "@capacitor/cli": "^8.6.0",
+    "@capacitor/core": "^8.6.0"
+  }
+}
