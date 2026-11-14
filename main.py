@@ -64,7 +64,7 @@ def download(url: str, lang: str) -> None:
     log.debug(f"Menjalankan command: {' '.join(cmd)}")
     
     try:
-        subprocess.run(cmd, check=True, capture_output=not verbose)
+        subprocess.run(cmd, check=True, capture_output=False)
         console.print("[bold green]✅ Sukses! File ada di folder AI_Captions.[/bold green]")
     except subprocess.CalledProcessError as e:
         log.error(f"Gagal download subtitle: {e}")
@@ -214,3 +214,40 @@ def seo(url: str) -> None:
 
 if __name__ == '__main__':
     cli()
+
+
+@cli.command()
+@click.option('--file', '-f', required=True, type=click.Path(exists=True), help='File SRT yang ingin dibersihkan.')
+def clean(file):
+    """Bersihkan subtitle dobel (rolling caption) dari YouTube."""
+    console = Console()
+    console.print(f"[yellow]🧹 Membersihkan file: {file}[/yellow]")
+
+    with open(file, 'r', encoding='utf-8') as f:
+        content = f.read()
+
+    blocks = content.strip().split('\n\n')
+    clean_blocks = []
+
+    for i in range(len(blocks)):
+        lines = blocks[i].split('\n')
+        if len(lines) < 3: continue
+        text = ' '.join(lines[2:])
+
+        is_duplicate = False
+        # Cek apakah teks ini adalah potongan awal dari blok berikutnya
+        if i + 1 < len(blocks):
+            next_lines = blocks[i+1].split('\n')
+            if len(next_lines) >= 3:
+                next_text = ' '.join(next_lines[2:])
+                if text.strip() in next_text.strip() and len(text) < len(next_text):
+                    is_duplicate = True
+
+        if not is_duplicate:
+            clean_blocks.append(blocks[i])
+
+    output_file = file.replace('.srt', '_clean.srt')
+    with open(output_file, 'w', encoding='utf-8') as f:
+        f.write('\n\n'.join(clean_blocks))
+
+    console.print(f"[green]✅ Selesai! File bersih disimpan di: {output_file}[/green]")

@@ -1,17 +1,14 @@
-// Fungsi utama untuk memproses perintah
 function runCommand(action) {
     const urlInput = document.getElementById('urlInput');
     const status = document.getElementById('status');
     const url = urlInput.value.trim();
 
-    // Validasi input (kecuali untuk tombol 'Lihat File')
-    if (action !== 'list' && !url) {
+    if (action !== 'list' && action !== 'clean' && !url) {
         status.innerText = "⚠️ Masukkan link YouTube terlebih dahulu!";
         status.style.color = "#f87171";
         return;
     }
 
-    // Siapkan perintah Termux
     let command = "";
     if (action === 'transcribe') {
         command = `yt-transcriber transcribe -u "${url}"`;
@@ -21,19 +18,17 @@ function runCommand(action) {
         command = `yt-transcriber seo -u "${url}"`;
     } else if (action === 'list') {
         command = `yt-transcriber list`;
+    } else if (action === 'clean') {
+        // Trik: Otomatis cari file .srt terbaru di folder AI_Captions
+        command = `yt-transcriber clean -f $(ls -t ~/storage/downloads/AI_Captions/*.srt 2>/dev/null | head -1)`;
     }
 
-    // 1. Salin perintah ke Clipboard
     navigator.clipboard.writeText(command).then(() => {
         status.innerText = `✅ Perintah disalin! Membuka Termux...`;
         status.style.color = "#4ade80";
 
-        // 2. Buka aplikasi Termux setelah jeda singkat
         setTimeout(() => {
-            // Mencoba membuka Termux via URL scheme
             window.location.href = 'termux://'; 
-            
-            // Fallback jika scheme tidak bekerja (opsional)
             setTimeout(() => {
                 status.innerText = `📋 Perintah ada di clipboard!\nSilakan Paste di Termux:\n${command}`;
             }, 1000);
@@ -44,7 +39,6 @@ function runCommand(action) {
     });
 }
 
-// Inisialisasi status awal
 document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('status').innerText = "Siap memproses. Masukkan link YouTube.";
 });

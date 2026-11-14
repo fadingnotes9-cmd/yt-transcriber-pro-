@@ -15,6 +15,7 @@
         .btn-transcribe { background: #3b82f6; color: white; grid-column: span 2; }
         .btn-download { background: #10b981; color: white; }
         .btn-seo { background: #f59e0b; color: white; }
+        .btn-clean { background: #ef4444; color: white; } /* Tombol Merah untuk Clean */
         .btn-list { background: #8b5cf6; color: white; }
         #status { margin-top: 20px; padding: 15px; background: #1e293b; border-radius: 8px; text-align: center; font-size: 14px; color: #94a3b8; border: 1px solid #334155; white-space: pre-wrap; }
     </style>
@@ -30,12 +31,12 @@
         <button class="btn-transcribe" onclick="runCommand('transcribe')">🧠 Transkrip AI (Auto)</button>
         <button class="btn-download" onclick="runCommand('download')">📥 Download Subtitle</button>
         <button class="btn-seo" onclick="runCommand('seo')">🔍 Analisis SEO</button>
-        <button class="btn-list" onclick="runCommand('list')">📂 Lihat File</button>
+        <button class="btn-clean" onclick="runCommand('clean')">🧹 Bersihkan Subtitle</button>
+        <button class="btn-list" onclick="runCommand('list')" style="grid-column: span 2;">📂 Lihat File</button>
     </div>
 
     <div id="status">Siap memproses. Masukkan link YouTube.</div>
 
-    <!-- Memuat logic JavaScript -->
     <script src="app.js"></script>
 </body>
 </html>
