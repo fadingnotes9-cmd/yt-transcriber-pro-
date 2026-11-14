@@ -48,27 +48,68 @@ def cli(verbose: bool) -> None:
         log.setLevel(logging.WARNING)
 
 @cli.command()
-@click.option('--url', '-u', prompt='Masukkan Link YouTube', help='Link video YouTube')
-@click.option('--lang', '-l', default='id', help='Bahasa subtitle (id/en)')
-def download(url: str, lang: str) -> None:
-    """Download subtitle langsung dari YouTube (Cepat)."""
-    check_dependencies()
-    console.print(Panel(f"Mencoba download subtitle: [bold cyan]{url}[/bold cyan]", title="📥 Download Subtitle"))
+@click.option('--url', '-u', required=True, help='URL video YouTube.')
+@click.option('--verbose', '-v', is_flag=True, help='Enable verbose output.')
+def download(url, verbose):
+    """Download dan bersihkan subtitle YouTube secara otomatis (Anti-Dobel)."""
+    console = Console()
+    console.print(f"[yellow]📥 Mendownload & membersihkan subtitle dari: {url}[/yellow]")
     
-    cmd = [
-        "yt-dlp", "--write-auto-subs", "--sub-langs", lang, 
-        "--convert-subs", "srt", "--skip-download",
-        "-o", f"{OUTPUT_DIR}/%(title)s.%(ext)s", url
-    ]
+    import subprocess, glob, os, re
     
-    log.debug(f"Menjalankan command: {' '.join(cmd)}")
+    cmd = ['yt-dlp', '--skip-download', '--write-auto-sub', '--sub-format', 'srt', 
+           '--sub-langs', 'id,en', '-o', 'raw_sub.%(ext)s', url]
+    subprocess.run(cmd, capture_output=True, text=True)
     
-    try:
-        subprocess.run(cmd, check=True, capture_output=False)
-        console.print("[bold green]✅ Sukses! File ada di folder AI_Captions.[/bold green]")
-    except subprocess.CalledProcessError as e:
-        log.error(f"Gagal download subtitle: {e}")
-        console.print("[bold red]❌ Gagal download subtitle. Coba gunakan perintah 'transcribe'.[/bold red]")
+    srt_files = glob.glob('raw_sub*.srt')
+    if not srt_files:
+        console.print("[red]❌ Gagal: Video tidak memiliki subtitle.[/red]")
+        return
+        
+    srt_file = srt_files[0]
+    
+    with open(srt_file, 'r', encoding='utf-8') as f:
+        blocks = f.read().strip().split('\n\n')
+        
+    cleaned = []
+    for block in blocks:
+        blines = block.strip().split('\n')
+        if len(blines) < 3: continue
+        
+        time_code = blines[1]
+        text = ' '.join(blines[2:]).strip()
+        text = re.sub(r'\s+', ' ', text)
+        
+        if not cleaned:
+            cleaned.append({'start': time_code.split(' --> ')[0], 'end': time_code.split(' --> ')[1], 'text': text})
+            continue
+            
+        prev = cleaned[-1]
+        prev_words = prev['text'].split()
+        curr_words = text.split()
+        
+        overlap = 0
+        for i in range(1, min(len(prev_words), len(curr_words), 7)):
+            if prev_words[-i:] == curr_words[:i]:
+                overlap = i
+                
+        if overlap >= 2:
+            prev['end'] = time_code.split(' --> ')[1]
+            prev['text'] = text
+        else:
+            cleaned.append({'start': time_code.split(' --> ')[0], 'end': time_code.split(' --> ')[1], 'text': text})
+            
+    output_file = "transkrip_bersih.txt"
+    with open(output_file, 'w', encoding='utf-8') as f:
+        for i, c in enumerate(cleaned, 1):
+            start_time = c['start'].split(',')[0]
+            f.write(f"[{start_time}] {c['text']}\n")
+            
+    console.print(f"[green]✅ SUKSES! File bersih disimpan sebagai: {output_file}[/green]")
+    console.print(f"[cyan]📊 Total: {len(cleaned)} kalimat utuh.[/cyan]")
+    
+    if os.path.exists(srt_file):
+        os.remove(srt_file)
 
 @cli.command()
 @click.option('--url', '-u', prompt='Masukkan Link YouTube', help='Link video YouTube')
@@ -216,10 +257,11 @@ if __name__ == '__main__':
     cli()
 
 
+
 @cli.command()
 @click.option('--file', '-f', required=True, type=click.Path(exists=True), help='File SRT yang ingin dibersihkan.')
 def clean(file):
-    """Bersihkan subtitle dobel (rolling caption) dari YouTube."""
+    """Bersihkan subtitle dobel (rolling caption) dari YouTube - Logika 2 Arah."""
     console = Console()
     console.print(f"[yellow]🧹 Membersihkan file: {file}[/yellow]")
 
@@ -230,19 +272,29 @@ def clean(file):
     clean_blocks = []
 
     for i in range(len(blocks)):
-        lines = blocks[i].split('\n')
-        if len(lines) < 3: continue
-        text = ' '.join(lines[2:])
-
+        lines_block = blocks[i].split('\n')
+        if len(lines_block) < 3: 
+            continue
+        text = ' '.join(lines_block[2:]).strip()
+        
         is_duplicate = False
-        # Cek apakah teks ini adalah potongan awal dari blok berikutnya
+        
+        # TIPE A: Cek apakah teks ini adalah potongan AWAL dari blok berikutnya
         if i + 1 < len(blocks):
             next_lines = blocks[i+1].split('\n')
             if len(next_lines) >= 3:
-                next_text = ' '.join(next_lines[2:])
-                if text.strip() in next_text.strip() and len(text) < len(next_text):
+                next_text = ' '.join(next_lines[2:]).strip()
+                if text in next_text and len(text) < len(next_text):
                     is_duplicate = True
-
+        
+        # TIPE B: Cek apakah teks ini adalah potongan AKHIR dari blok sebelumnya
+        if i > 0 and not is_duplicate:
+            prev_lines = blocks[i-1].split('\n')
+            if len(prev_lines) >= 3:
+                prev_text = ' '.join(prev_lines[2:]).strip()
+                if text in prev_text and len(text) < len(prev_text):
+                    is_duplicate = True
+        
         if not is_duplicate:
             clean_blocks.append(blocks[i])
 
@@ -251,3 +303,4 @@ def clean(file):
         f.write('\n\n'.join(clean_blocks))
 
     console.print(f"[green]✅ Selesai! File bersih disimpan di: {output_file}[/green]")
+    console.print(f"[cyan]📊 Statistik: {len(blocks)} caption → {len(clean_blocks)} caption bersih[/cyan]")
